@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>장&상 — 재료에서, 마지막 한 술까지</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+<style>
+  :root {
+    --ink: #0b0908;
+    --paper: rgba(252, 249, 244, 0.94);
+    --accent: #7d8a3a;
+    --text-sub: rgba(255, 255, 255, 0.78);
+
+    /* Pretendard가 한글·라틴을 맡고, 한자·가나는 시스템 서체로 넘긴다 */
+    --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+      'Apple SD Gothic Neo', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic',
+      'PingFang SC', 'Microsoft YaHei', 'Noto Sans KR', sans-serif;
+    --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
+
+    /* 화면이 넓어지면 제목도 같이 커진다 */
+    --h1-max: 100px;
+    --h1: clamp(34px, 4.6vw, var(--h1-max));
+    --copy-w: min(1180px, 64vw);
+
+    --scene: 900ms;       /* 장면 간 디졸브 */
+    --media-fade: 620ms;  /* 장면 안 미디어 교대 */
+  }
+
+  /* 라틴 문자는 같은 글자 수라도 가로로 길어 상한을 낮춘다 */
+  :root:lang(en), :root:lang(es) { --h1-max: 82px; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; overflow: hidden; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--ink);
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+
+  /* ── 헤더 ───────────────────────────── */
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 28px;
+    pointer-events: none;
+  }
+  .site-header > * { pointer-events: auto; }
+
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #fff; }
+  .brand-mark {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #d0492f, #8f2b1c);
+    display: grid; place-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  }
+  .brand-mark svg { width: 18px; height: 18px; }
+  .brand-name {
+    font-weight: 800; font-size: 17px; letter-spacing: -0.01em;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
+  }
+
+  .main-nav {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 4px; padding: 6px;
+    border-radius: 999px;
+    background: var(--paper);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  }
+  .main-nav button {
+    font: inherit; border: 0; cursor: pointer;
+    padding: 8px 15px; border-radius: 999px;
+    font-size: 13.5px; font-weight: 600;
+    color: #4a4238; background: transparent; white-space: nowrap;
+    transition: background 0.5s ease, color 0.5s ease;
+  }
+  .main-nav button[aria-current='true'] { background: var(--accent); color: #fff; }
+
+  .header-right { display: flex; align-items: center; gap: 8px; }
+
+  /* ── 언어 전환 ──────────────────────── */
+  .lang { position: relative; }
+  .lang-toggle {
+    font: inherit; cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 16px; border: 0; border-radius: 999px;
+    background: var(--paper); color: #33291f;
+    font-size: 13.5px; font-weight: 700;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  }
+  .lang-toggle svg { width: 14px; height: 14px; opacity: 0.65; }
+  .lang-toggle::after {
+    content: ''; width: 5px; height: 5px;
+    border-right: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor;
+    transform: rotate(45deg) translate(-1px, -1px);
+    opacity: 0.5;
+  }
+
+  .lang-menu {
+    position: absolute; top: calc(100% + 8px); right: 0;
+    min-width: 148px; padding: 6px; margin: 0;
+    list-style: none;
+    border-radius: 14px;
+    background: var(--paper);
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.28);
+    opacity: 0; visibility: hidden;
+    transform: translateY(-6px);
+    transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s linear 0.18s;
+  }
+  .lang.is-open .lang-menu {
+    opacity: 1; visibility: visible; transform: none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+  .lang-menu button {
+    font: inherit; cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    width: 100%; padding: 9px 12px;
+    border: 0; border-radius: 9px; background: transparent;
+    color: #4a4238; font-size: 13.5px; font-weight: 600; text-align: left;
+    transition: background 0.15s ease;
+  }
+  .lang-menu button:hover { background: rgba(0, 0, 0, 0.06); }
+  .lang-menu button[aria-selected='true'] { color: #1d1712; }
+  .lang-menu button[aria-selected='true']::after {
+    content: ''; width: 6px; height: 6px; border-radius: 999px; background: var(--accent);
+  }
+
+  .order-btn {
+    padding: 10px 20px; border-radius: 999px;
+    background: var(--paper); color: #33291f;
+    font-size: 13.5px; font-weight: 700; text-decoration: none;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+    transition: transform 0.2s ease;
+  }
+  .order-btn:hover { transform: translateY(-1px); }
+
+  /* ── 장면 스택 ──────────────────────── */
+  .deck { position: fixed; inset: 0; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; align-items: flex-end;
+    overflow: hidden;
+    opacity: 0; visibility: hidden; z-index: 0;
+  }
+  .slide.is-active { opacity: 1; visibility: visible; z-index: 1; }
+
+  /* 나가는 장면은 위에 남겨 두고 녹여 없앤다 — 두 장면을 반씩 겹치지 않으므로
+     중간에 어두워지는 구간이 생기지 않는다 */
+  .slide.is-leaving {
+    visibility: visible; z-index: 3;
+    animation: scene-dissolve var(--scene) ease-in-out forwards;
+  }
+  @keyframes scene-dissolve { from { opacity: 1; } to { opacity: 0; } }
+
+  .slide-media { position: absolute; inset: 0; transform-origin: center; }
+
+  /* 앞 장면은 초점을 놓으며 흘러 나가고, 뒤 장면은 흐릿하게 들어와 또렷해진다 */
+  .slide.is-leaving .slide-media {
+    animation: scene-out var(--scene) cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  .slide.is-entering .slide-media {
+    animation: scene-in var(--scene) cubic-bezier(0.2, 0.6, 0.2, 1) forwards;
+  }
+  @keyframes scene-out {
+    from { transform: translateY(0) scale(1); filter: blur(0px); }
+    to   { transform: translateY(-2.5%) scale(1.05); filter: blur(5px); }
+  }
+  @keyframes scene-in {
+    from { transform: translateY(3.5%) scale(1.06); filter: blur(7px); }
+    to   { transform: translateY(0) scale(1); filter: blur(0px); }
+  }
+
+  /* 미디어 캐러셀 — 한 장면 안에서 이미지/영상이 교대한다 */
+  .media-stack { position: absolute; inset: 0; transform-origin: center; }
+
+  .media-item {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transform: scale(1.05) translateX(var(--drift, 0px));
+    transition: opacity var(--media-fade) ease, transform var(--media-fade) cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  .media-item.is-current { opacity: 1; transform: scale(1) translateX(0); }
+
+  /* 장면이 머무는 동안의 느린 줌 */
+  .slide.is-active .media-stack { animation: drift 20s ease-out forwards; }
+  @keyframes drift {
+    from { transform: scale(1.02); }
+    to   { transform: scale(1.1); }
+  }
+
+  /* 카피가 넓어진 만큼 왼쪽 어둠도 넓게 깔아 가독성을 지킨다 */
+  .slide-media::after {
+    content: '';
+    position: absolute; inset: 0; z-index: 5;
+    background:
+      linear-gradient(to top, rgba(10, 8, 6, 0.74) 0%, rgba(10, 8, 6, 0.3) 40%, rgba(10, 8, 6, 0.06) 64%),
+      linear-gradient(to right, rgba(10, 8, 6, 0.7) 0%, rgba(10, 8, 6, 0.4) 44%, rgba(10, 8, 6, 0.1) 70%, transparent 84%),
+      linear-gradient(to bottom, rgba(10, 8, 6, 0.38) 0%, transparent 18%);
+  }
+
+  /* ── 카피 ───────────────────────────── */
+  .slide-copy {
+    position: relative; z-index: 10;
+    width: var(--copy-w);
+    padding: 0 0 9vh 5vw;
+  }
+
+  .slide-meta { display: flex; align-items: center; gap: 18px; margin-bottom: 16px; }
+
+  .slide-counter {
+    font-family: var(--font-mono);
+    font-size: clamp(11px, 0.85vw, 14px);
+    letter-spacing: 0.35em;
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  /* 장면 안 미디어 이동 · 진행 표시 */
+  .media-bar { display: flex; align-items: center; gap: 10px; }
+  .media-bar button {
+    width: 24px; height: 24px;
+    display: grid; place-items: center;
+    padding: 0; border: 0; cursor: pointer;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px; line-height: 1;
+    transition: background 0.2s ease;
+  }
+  .media-bar button:hover { background: rgba(255, 255, 255, 0.3); }
+
+  .segs { display: flex; gap: 5px; }
+  .seg {
+    width: 24px; height: 3px; border-radius: 999px;
+    background: rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+  }
+  .seg i { display: block; height: 100%; width: 0; background: var(--accent); }
+  .seg.is-done i { width: 100%; }
+  .seg.is-active i { animation: seg-fill var(--seg-dur, 2600ms) linear forwards; }
+  @keyframes seg-fill { from { width: 0; } to { width: 100%; } }
+
+  .slide-eyebrow {
+    font-size: clamp(11.5px, 0.92vw, 15px);
+    font-weight: 700; letter-spacing: 0.3em;
+    color: var(--slide-eyebrow); margin-bottom: 18px;
+  }
+  .slide-title {
+    font-size: var(--h1);
+    font-weight: 800; line-height: 1.14; letter-spacing: -0.025em;
+    word-break: keep-all;
+    text-shadow: 0 2px 28px rgba(0, 0, 0, 0.4);
+    margin-bottom: 22px;
+  }
+  .slide-sub {
+    font-size: clamp(15px, 1.32vw, 22px); line-height: 1.68;
+    color: var(--text-sub); word-break: keep-all;
+    max-width: 44ch; margin-bottom: 30px;
+  }
+  .slide-chips { display: flex; flex-wrap: wrap; gap: 9px; }
+  .chip {
+    padding: 9px 18px; border-radius: 999px;
+    font-size: clamp(12px, 0.92vw, 15px); font-weight: 600;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    backdrop-filter: blur(6px);
+  }
+  .slide-ctas { display: flex; flex-wrap: wrap; gap: 10px; }
+  .cta-primary, .cta-secondary {
+    padding: 15px 30px; border-radius: 999px;
+    font-size: clamp(14px, 1.05vw, 17px); font-weight: 700; text-decoration: none;
+    transition: transform 0.2s ease;
+  }
+  .cta-primary { background: var(--paper); color: #2c2118; }
+  .cta-secondary { border: 1px solid rgba(255, 255, 255, 0.5); color: #fff; }
+  .cta-primary:hover, .cta-secondary:hover { transform: translateY(-2px); }
+
+  /* 앞 장면 카피는 먼저 걷히고, 뒤 장면 카피는 그 뒤에 올라온다 */
+  .slide-copy > * { opacity: 0; transform: translateY(26px); }
+  .slide.is-active .slide-copy > * {
+    animation: copy-rise 0.72s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+  }
+  .slide.is-active .slide-copy > :nth-child(1) { animation-delay: 0.30s; }
+  .slide.is-active .slide-copy > :nth-child(2) { animation-delay: 0.37s; }
+  .slide.is-active .slide-copy > :nth-child(3) { animation-delay: 0.44s; }
+  .slide.is-active .slide-copy > :nth-child(4) { animation-delay: 0.52s; }
+  .slide.is-active .slide-copy > :nth-child(5) { animation-delay: 0.60s; }
+  @keyframes copy-rise { to { opacity: 1; transform: none; } }
+
+  .slide.is-leaving .slide-copy { animation: copy-out 0.28s ease forwards; }
+  @keyframes copy-out {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-14px); }
+  }
+
+  /* ── 우측 장면 인디케이터 ───────────── */
+  .progress-rail {
+    position: fixed; right: 22px; top: 50%; transform: translateY(-50%);
+    z-index: 40; display: flex; flex-direction: column; gap: 10px;
+  }
+  .progress-rail button {
+    width: 6px; height: 6px; padding: 0; border: 0; cursor: pointer;
+    border-radius: 999px; background: rgba(255, 255, 255, 0.45);
+    transition: height 0.45s ease, background 0.45s ease;
+  }
+  .progress-rail button[aria-current='true'] { height: 22px; background: var(--accent); }
+
+  /* ── 스크롤 힌트 ────────────────────── */
+  .scroll-hint {
+    position: fixed; right: 5vw; bottom: 6vh; z-index: 30;
+    font-size: 12.5px; letter-spacing: 0.14em;
+    color: rgba(255, 255, 255, 0.85);
+    display: flex; align-items: center; gap: 10px;
+    opacity: 0; transition: opacity 0.5s ease; pointer-events: none;
+  }
+  .scroll-hint.is-visible { opacity: 1; }
+  .scroll-hint::after {
+    content: '';
+    width: 1px; height: 34px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.9), transparent);
+    animation: hint-drop 1.8s ease-in-out infinite;
+  }
+  @keyframes hint-drop {
+    0%   { transform: scaleY(0); transform-origin: top; }
+    50%  { transform: scaleY(1); transform-origin: top; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  :focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+  /* ── 모바일 ─────────────────────────── */
+  @media (max-width: 860px) {
+    :root {
+      --h1: clamp(32px, 9.4vw, 54px);
+      --h1-max: 54px;
+      --copy-w: 90vw;
+    }
+    .site-header { padding: 16px 18px; }
+    .main-nav { display: none; }
+    .brand-name { font-size: 16px; }
+    .lang-toggle, .order-btn { padding: 9px 14px; font-size: 12.5px; }
+    .lang-toggle svg { display: none; }
+    .slide-copy { padding: 0 0 13vh 6vw; }
+    .slide-sub { font-size: 15px; max-width: none; margin-bottom: 24px; }
+    .slide-title { margin-bottom: 18px; }
+    .chip { padding: 8px 14px; font-size: 12.5px; }
+    .cta-primary, .cta-secondary { padding: 13px 24px; font-size: 14px; }
+    .progress-rail { right: 12px; }
+    .scroll-hint { display: none; }
+  }
+
+  /* 모션 최소화: 움직임 없이 밝기만 넘긴다, 자동 넘김도 끈다 */
+  @media (prefers-reduced-motion: reduce) {
+    :root { --scene: 300ms; --media-fade: 220ms; }
+    .slide.is-leaving .slide-media,
+    .slide.is-entering .slide-media { animation: none; }
+    .slide.is-active .media-stack { animation: none; transform: scale(1.02); }
+    .media-item, .media-item.is-current { transform: none; }
+    .seg.is-active i { animation: none; width: 100%; }
+    .slide.is-active .slide-copy > * { animation: none; opacity: 1; transform: none; }
+    .slide.is-leaving .slide-copy { animation: none; opacity: 0; }
+    .scroll-hint::after { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="brand" href="#" data-goto="0">
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none">
+        <ellipse cx="12" cy="7.5" rx="5" ry="6" fill="#fff"/>
+        <rect x="10.8" y="12" width="2.4" height="9" rx="1.2" fill="#fff"/>
+      </svg>
+    </span>
+    <span class="brand-name"></span>
+  </a>
+
+  <nav class="main-nav"></nav>
+
+  <div class="header-right">
+    <div class="lang">
+      <button type="button" class="lang-toggle" aria-haspopup="listbox" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18" />
+        </svg>
+        <span class="lang-current"></span>
+      </button>
+      <ul class="lang-menu" role="listbox"></ul>
+    </div>
+    <a class="order-btn" href="#" data-goto="3"></a>
+  </div>
+</header>
+
+<nav class="progress-rail"></nav>
+
+<p class="scroll-hint is-visible"></p>
+
+<main class="deck"></main>
+
+<script>
+/* ────────────────────────────────────────────────────────────
+   장면 정의 — 미디어 교체는 media 배열, 문안 교체는 text 객체만 고치면 된다.
+   type: 'image' | 'video'   (video의 poster는 로딩 중 첫 화면으로 쓰인다)
+   ──────────────────────────────────────────────────────────── */
+const LANGS = [
+  { code: 'ko', label: '한국어', short: 'KO' },
+  { code: 'en', label: 'English', short: 'EN' },
+  { code: 'ja', label: '日本語', short: 'JA' },
+  { code: 'zh', label: '中文', short: 'ZH' },
+  { code: 'es', label: 'Español', short: 'ES' },
+];
+
+const UI = {
+  ko: {
+    brand: '장&상', order: '주문하기',
+    docTitle: '장&상 — 재료에서, 마지막 한 술까지',
+    hint: '스크롤해서 다음 장면으로 넘겨 보세요',
+    journey: '여정', scenes: '장면 이동', language: '언어 선택',
+    prevMedia: '이전 미디어', nextMedia: '다음 미디어',
+  },
+  en: {
+    brand: 'Jang&Sang', order: 'Order',
+    docTitle: 'Jang&Sang — From the field to the last spoon',
+    hint: 'Scroll to move to the next scene',
+    journey: 'Journey', scenes: 'Go to scene', language: 'Choose language',
+    prevMedia: 'Previous media', nextMedia: 'Next media',
+  },
+  ja: {
+    brand: 'チャン&サン', order: '注文する',
+    docTitle: 'チャン&サン — 素材から、最後のひと匙まで',
+    hint: 'スクロールして次の場面へ',
+    journey: '道のり', scenes: '場面へ移動', language: '言語を選ぶ',
+    prevMedia: '前のメディア', nextMedia: '次のメディア',
+  },
+  zh: {
+    brand: '酱&尚', order: '立即订购',
+    docTitle: '酱&尚 — 从原料，到最后一勺',
+    hint: '滚动切换到下一个场景',
+    journey: '历程', scenes: '跳转场景', language: '选择语言',
+    prevMedia: '上一个', nextMedia: '下一个',
+  },
+  es: {
+    brand: 'Jang&Sang', order: 'Pedir',
+    docTitle: 'Jang&Sang — Del campo a la última cucharada',
+    hint: 'Desplázate para pasar a la siguiente escena',
+    journey: 'Recorrido', scenes: 'Ir a la escena', language: 'Elegir idioma',
+    prevMedia: 'Anterior', nextMedia: 'Siguiente',
+  },
+};
+
+const SLIDES = [
+  {
+    accent: '#7d8a3a',
+    eyebrow: '#bcc76d',
+    media: [
+      { type: 'image', src: 'assets/img-ingredients.png', alt: '고추, 콩, 쌀 등 장을 이루는 재료와 고추장 병' },
+      { type: 'image', src: 'assets/img-flatlay-soy.png', alt: '콩, 다시마, 마늘 등 재료와 간장 병' },
+      { type: 'image', src: 'assets/img-flatlay-mayo.png', alt: '달걀, 기름, 레몬과 함께 놓인 마요네즈 병' },
+      { type: 'image', src: 'assets/img-flatlay-mustard.png', alt: '꿀, 레몬, 머스터드씨와 함께 놓인 허니머스터드 병' },
+      { type: 'image', src: 'assets/img-flatlay-chili.png', alt: '고추, 마늘과 함께 놓인 칠리소스 병' },
+      { type: 'image', src: 'assets/img-green.png', alt: '아보카도, 라임, 고수와 함께 놓인 허브 그린 소스 병' },
+      { type: 'image', src: 'assets/img-flatlay-pouch.png', alt: '고기, 배, 양파와 함께 놓인 대용량 소스 파우치' },
+    ],
+    text: {
+      ko: { nav: '원물', label: '재료에서 시작합니다', title: '재료에서,<br />마지막 한 술까지.',
+        sub: '태양초 고추, 우리콩, 통쌀 — 한 병에 들어갈 재료를 산지에서 직접 고릅니다. 그 첫 장면부터 한 술의 여정이 시작됩니다.',
+        chips: ['태양초 고추', '우리콩', '통쌀 조청'] },
+      en: { nav: 'Source', label: 'It starts at the harvest', title: 'From the field,<br />to the last spoon.',
+        sub: 'Sun-dried chilies, Korean soybeans, whole-grain rice — we pick every ingredient where it grows. The journey of one spoonful starts here.',
+        chips: ['Sun-dried chili', 'Korean soy', 'Rice syrup'] },
+      ja: { nav: '原料', label: '素材から始まります', title: '素材から、<br />最後のひと匙まで。',
+        sub: '天日干しの唐辛子、国産大豆、うるち米 — 一本に入る素材を産地で選びます。その最初の場面から、ひと匙の旅が始まります。',
+        chips: ['天日唐辛子', '国産大豆', '米あめ'] },
+      zh: { nav: '原料', label: '始于原料', title: '从原料，<br />到最后一勺。',
+        sub: '日晒辣椒、本土大豆、整粒稻米 — 每一瓶的原料都在产地亲手挑选。一勺的旅程，从这里开始。',
+        chips: ['日晒辣椒', '本土大豆', '米糖浆'] },
+      es: { nav: 'Origen', label: 'Todo empieza en el campo', title: 'Del campo,<br />a la última cucharada.',
+        sub: 'Chiles secados al sol, soja coreana, arroz integral: elegimos cada ingrediente en su origen. Ahí empieza el viaje de una cucharada.',
+        chips: ['Chile al sol', 'Soja coreana', 'Sirope de arroz'] },
+    },
+  },
+  {
+    accent: '#c8402e',
+    eyebrow: '#e0684f',
+    media: [
+      { type: 'video', src: 'assets/vid-bibimbap3.mp4', poster: 'assets/poster-bibimbap3.jpg', alt: '나물과 버섯 위에 올린 고추장' },
+      { type: 'video', src: 'assets/vid-naengmyeon.mp4', poster: 'assets/poster-naengmyeon.jpg', alt: '냉면' },
+      { type: 'video', src: 'assets/vid-sundubu.mp4', poster: 'assets/poster-sundubu.jpg', alt: '순두부찌개' },
+      { type: 'video', src: 'assets/vid-mayo-making.mp4', poster: 'assets/poster-mayo-making.jpg', alt: '기름을 부어 마요네즈를 만드는 모습' },
+    ],
+    text: {
+      ko: { nav: '주방', label: '매일의 주방에서', title: '요리는 쉽게,<br />맛은 깊게.',
+        sub: '나물 무침부터 냉면, 찌개까지 — 소스 하나면 우리 집 주방의 매일이 완성됩니다.',
+        chips: ['무침', '면 요리', '찌개'] },
+      en: { nav: 'Kitchen', label: 'In everyday kitchens', title: 'Easy cooking,<br />deep flavor.',
+        sub: 'From seasoned greens to cold noodles and stews — one sauce carries the everyday kitchen.',
+        chips: ['Greens', 'Noodles', 'Stews'] },
+      ja: { nav: 'キッチン', label: '毎日の台所で', title: '料理は手軽に、<br />味は深く。',
+        sub: 'ナムルから冷麺、チゲまで — ソースひとつで毎日の台所がまわります。',
+        chips: ['ナムル', '麺料理', 'チゲ'] },
+      zh: { nav: '厨房', label: '在每天的厨房里', title: '做菜更简单，<br />味道更醇厚。',
+        sub: '从拌菜到冷面、炖汤 — 一瓶酱，撑起每天的厨房。',
+        chips: ['拌菜', '面食', '炖汤'] },
+      es: { nav: 'Cocina', label: 'En la cocina de cada día', title: 'Cocina fácil,<br />sabor profundo.',
+        sub: 'De las verduras aliñadas a los fideos fríos y los guisos: una salsa sostiene la cocina diaria.',
+        chips: ['Verduras', 'Fideos', 'Guisos'] },
+    },
+  },
+  {
+    accent: '#4f88b3',
+    eyebrow: '#93c0dc',
+    media: [
+      { type: 'video', src: 'assets/vid-factory-line.mp4', poster: 'assets/poster-factory-line.jpg', alt: '클린룸 생산 라인에서 작업하는 모습' },
+      { type: 'video', src: 'assets/vid-factory-tank.mp4', poster: 'assets/poster-factory-tank.jpg', alt: '스테인리스 배합 탱크 설비' },
+      { type: 'image', src: 'assets/factory-pouch.jpg', alt: '파우치 충전 설비' },
+      { type: 'image', src: 'assets/factory-lab.jpg', alt: '품질 검사실' },
+    ],
+    text: {
+      ko: { nav: '공장', label: '보이지 않는 곳까지', title: '담는 순간까지,<br />깨끗하게.',
+        sub: '클린룸 생산 라인에서 사람과 기계가 함께 — 끓여낸 그대로를 한 병 한 병 담아 당일 밀봉합니다.',
+        chips: ['클린룸 충전', '이중 검수', '당일 밀봉'] },
+      en: { nav: 'Facility', label: 'Down to what you never see', title: 'Clean, right up<br />to the last seal.',
+        sub: 'People and machines work side by side on a cleanroom line, filling each bottle with what we just cooked and sealing it the same day.',
+        chips: ['Cleanroom filling', 'Double inspection', 'Sealed same day'] },
+      ja: { nav: '工場', label: '見えないところまで', title: '詰める瞬間まで、<br />清潔に。',
+        sub: 'クリーンルームの製造ラインで、人と機械が一緒に — 炊きあげたそのままを一本ずつ詰め、その日のうちに封をします。',
+        chips: ['クリーンルーム充填', '二重検査', '当日封入'] },
+      zh: { nav: '工厂', label: '连看不见的地方', title: '直到装瓶那刻，<br />始终洁净。',
+        sub: '洁净车间的产线上，人与设备协同作业 — 将刚熬好的酱一瓶瓶灌装，当天完成密封。',
+        chips: ['洁净灌装', '双重检验', '当日密封'] },
+      es: { nav: 'Planta', label: 'Hasta lo que no se ve', title: 'Limpio hasta<br />el último sellado.',
+        sub: 'Personas y máquinas trabajan juntas en una sala limpia: llenamos cada botella con lo recién cocido y la sellamos el mismo día.',
+        chips: ['Sala limpia', 'Doble control', 'Sellado el mismo día'] },
+    },
+  },
+  {
+    accent: '#cf8f34',
+    eyebrow: '#ecb769',
+    media: [
+      { type: 'video', src: 'assets/vid-dish-bibimbap.mp4', poster: 'assets/poster-dish-bibimbap.jpg', alt: '비빔밥에 고추장을 짜서 올리는 모습' },
+      { type: 'video', src: 'assets/vid-dish-tteokbokki.mp4', poster: 'assets/poster-dish-tteokbokki.jpg', alt: '고추장 떡볶이와 제육볶음' },
+      { type: 'video', src: 'assets/vid-dish-sandwich.mp4', poster: 'assets/poster-dish-sandwich.jpg', alt: '샌드위치에 마요네즈를 짜는 모습' },
+      { type: 'video', src: 'assets/vid-dish-salad.mp4', poster: 'assets/poster-dish-salad.jpg', alt: '샐러드에 드레싱을 붓는 모습' },
+      { type: 'video', src: 'assets/vid-dish-shrimp.mp4', poster: 'assets/poster-dish-shrimp.jpg', alt: '새우에 간장 소스를 붓는 모습' },
+      { type: 'video', src: 'assets/vid-dip-celery.mp4', poster: 'assets/poster-dip-celery.jpg', alt: '셀러리를 마요네즈에 찍는 모습' },
+    ],
+    text: {
+      ko: { nav: '식탁', label: '매일의 한 끼에', title: '한 스푼에,<br />오늘 한 끼 완성.',
+        sub: '비비고, 볶고, 바르는 모든 순간에 — 한 병이면 간이 끝납니다.',
+        chips: ['비빔', '볶음', '샌드위치'] },
+      en: { nav: 'Table', label: 'For the meals you make', title: 'One spoon,<br />dinner is done.',
+        sub: 'Stir it, fry with it, spread it — one bottle handles the seasoning.',
+        chips: ['Rice bowls', 'Stir-fries', 'Sandwiches'] },
+      ja: { nav: '食卓', label: '毎日の一食に', title: 'ひと匙で、<br />今日の一食が決まる。',
+        sub: '混ぜる、炒める、塗る — 一本あれば味付けは終わりです。',
+        chips: ['混ぜご飯', '炒めもの', 'サンドイッチ'] },
+      zh: { nav: '餐桌', label: '为每天的一餐', title: '一勺下去，<br />这餐就成了。',
+        sub: '拌饭、炒菜、涂抹 — 一瓶就搞定调味。',
+        chips: ['拌饭', '炒菜', '三明治'] },
+      es: { nav: 'Mesa', label: 'Para la comida de cada día', title: 'Una cucharada<br />y listo.',
+        sub: 'Mézclala, saltea con ella, úntala: una botella resuelve el sazón.',
+        chips: ['Arroces', 'Salteados', 'Sándwiches'] },
+    },
+  },
+];
+
+const IMAGE_HOLD = 2600;      // 이미지가 머무는 시간
+const VIDEO_FALLBACK = 8000;  // 영상이 ended를 못 알릴 때의 안전장치
+const LANG_KEY = 'jangsang-lang';
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const pad = (n) => String(n).padStart(2, '0');
+const supported = LANGS.map((l) => l.code);
+
+let lang = (() => {
+  const saved = localStorage.getItem(LANG_KEY);
+  if (saved && supported.includes(saved)) return saved;
+  const nav = (navigator.language || 'ko').slice(0, 2).toLowerCase();
+  return supported.includes(nav) ? nav : 'ko';
+})();
+
+/* ── 렌더 ───────────────────────────── */
+const mediaTag = (m, j, single) => {
+  const cls = `media-item${j === 0 ? ' is-current' : ''}`;
+  return m.type === 'video'
+    ? `<video class="${cls}" data-type="video" src="${m.src}" poster="${m.poster}" muted playsinline preload="metadata"${single ? ' loop' : ''}></video>`
+    : `<img class="${cls}" data-type="image" src="${m.src}" alt="${m.alt}" />`;
+};
+
+const copyHtml = (slide, i, code) => {
+  const t = slide.text[code];
+  const u = UI[code];
+  const single = slide.media.length < 2;
+  const h = i === 0 ? 'h1' : 'h2';
+  const bar = single ? '' : `
+    <div class="media-bar">
+      <button type="button" data-media="-1" aria-label="${u.prevMedia}">‹</button>
+      <span class="segs">${slide.media.map(() => '<span class="seg"><i></i></span>').join('')}</span>
+      <button type="button" data-media="1" aria-label="${u.nextMedia}">›</button>
+    </div>`;
+  const tail = t.ctas
+    ? `<div class="slide-ctas">${t.ctas.map((c, k) => `<a class="${k === 0 ? 'cta-primary' : 'cta-secondary'}" href="#">${c}</a>`).join('')}</div>`
+    : `<div class="slide-chips">${t.chips.map((c) => `<span class="chip">${c}</span>`).join('')}</div>`;
+
+  return `
+    <div class="slide-meta">
+      <span class="slide-counter">${pad(i + 1)} / ${pad(SLIDES.length)}</span>
+      ${bar}
+    </div>
+    <p class="slide-eyebrow">${t.label}</p>
+    <${h} class="slide-title">${t.title}</${h}>
+    <p class="slide-sub">${t.sub}</p>
+    ${tail}`;
+};
+
+const deck = document.querySelector('.deck');
+deck.innerHTML = SLIDES.map((s, i) => {
+  const single = s.media.length < 2;
+  return `
+  <section class="slide${i === 0 ? ' is-active' : ''}" style="--slide-eyebrow:${s.eyebrow}">
+    <div class="slide-media">
+      <div class="media-stack">${s.media.map((m, j) => mediaTag(m, j, single)).join('')}</div>
+    </div>
+    <div class="slide-copy">${copyHtml(s, i, lang)}</div>
+  </section>`;
+}).join('');
+
+document.querySelector('.lang-menu').innerHTML = LANGS
+  .map((l) => `<li role="none"><button type="button" role="option" data-lang="${l.code}" aria-selected="${l.code === lang}">${l.label}</button></li>`)
+  .join('');
+
+/* ── 상태 ───────────────────────────── */
+const slideEls = [...deck.querySelectorAll('.slide')];
+const navEl = document.querySelector('.main-nav');
+const railEl = document.querySelector('.progress-rail');
+const hint = document.querySelector('.scroll-hint');
+const langBox = document.querySelector('.lang');
+const langToggle = document.querySelector('.lang-toggle');
+const langCurrent = document.querySelector('.lang-current');
+const root = document.documentElement;
+
+const scenes = slideEls.map((el, i) => ({
+  el,
+  media: [...el.querySelectorAll('.media-item')],
+  segs: [...el.querySelectorAll('.seg')],
+  index: 0,
+  timer: null,
+  config: SLIDES[i],
+  i,
+}));
+
+let current = 0;
+let busy = false;
+
+const ms = (name) => parseFloat(getComputedStyle(root).getPropertyValue(name)) || 0;
+
+/* ── 장면 안 미디어 ─────────────────── */
+function stopScene(scene) {
+  clearTimeout(scene.timer);
+  scene.timer = null;
+  scene.media.forEach((el) => { if (el.tagName === 'VIDEO') el.pause(); });
+}
+
+function paintSegs(scene) {
+  scene.segs.forEach((seg, j) => {
+    seg.classList.remove('is-active', 'is-done');
+    seg.querySelector('i').style.width = '';
+    if (j < scene.index) seg.classList.add('is-done');
+  });
+  const active = scene.segs[scene.index];
+  if (!active) return;
+  if (scene.config.media[scene.index].type === 'image') {
+    active.style.setProperty('--seg-dur', `${IMAGE_HOLD}ms`);
+    void active.offsetWidth; // 채움 애니메이션을 처음부터 다시 돌린다
+    active.classList.add('is-active');
+  }
+}
+
+function playCurrent(scene) {
+  clearTimeout(scene.timer);
+  const el = scene.media[scene.index];
+  const m = scene.config.media[scene.index];
+
+  scene.media.forEach((v) => { if (v.tagName === 'VIDEO' && v !== el) v.pause(); });
+
+  if (m.type === 'video') {
+    el.currentTime = 0;
+    el.play().catch(() => {});
+    // 영상은 끝날 때 넘어간다. ended가 오지 않는 경우를 대비해 길이 기반 예비 타이머를 건다.
+    if (scene.media.length > 1 && !reduceMotion) {
+      const wait = Number.isFinite(el.duration) && el.duration > 0 ? el.duration * 1000 + 400 : VIDEO_FALLBACK;
+      scene.timer = setTimeout(() => advance(scene), wait);
+    }
+  } else if (scene.media.length > 1 && !reduceMotion) {
+    scene.timer = setTimeout(() => advance(scene), IMAGE_HOLD);
+  }
+}
+
+function showMedia(scene, next, dir) {
+  const total = scene.media.length;
+  if (total < 2) { playCurrent(scene); return; }
+
+  const from = scene.media[scene.index];
+  const to = scene.media[(next + total) % total];
+  const enter = dir >= 0 ? 40 : -40;
+
+  from.style.setProperty('--drift', `${-enter}px`);
+  to.style.setProperty('--drift', `${enter}px`);
+  from.classList.remove('is-current');
+  to.classList.add('is-current');
+
+  scene.index = (next + total) % total;
+  paintSegs(scene);
+  playCurrent(scene);
+}
+
+function advance(scene) {
+  if (scenes[current] !== scene) return;
+  showMedia(scene, scene.index + 1, 1);
+}
+
+function startScene(scene) {
+  scene.index = 0;
+  scene.media.forEach((el, j) => {
+    el.style.setProperty('--drift', '0px');
+    el.classList.toggle('is-current', j === 0);
+  });
+  paintSegs(scene);
+  playCurrent(scene);
+}
+
+function stepMedia(dir) {
+  const scene = scenes[current];
+  if (busy || scene.media.length < 2) return;
+  showMedia(scene, scene.index + dir, dir);
+}
+
+// 영상이 끝나면 다음 미디어로
+scenes.forEach((scene) => {
+  scene.media.forEach((el) => {
+    if (el.tagName !== 'VIDEO') return;
+    el.addEventListener('ended', () => { if (scenes[current] === scene) advance(scene); });
+    el.addEventListener('error', () => { if (scenes[current] === scene) advance(scene); });
+    el.addEventListener('timeupdate', () => {
+      const seg = scene.segs[scene.index];
+      if (!seg || scene.media[scene.index] !== el || !el.duration) return;
+      seg.querySelector('i').style.width = `${(el.currentTime / el.duration) * 100}%`;
+    });
+  });
+});
+
+/* ── 언어 ───────────────────────────── */
+function applyLang(code) {
+  lang = code;
+  localStorage.setItem(LANG_KEY, code);
+  const u = UI[code];
+
+  root.lang = code;
+  document.title = u.docTitle;
+  document.querySelector('.brand-name').textContent = u.brand;
+  document.querySelector('.order-btn').textContent = u.order;
+  hint.textContent = u.hint;
+  navEl.setAttribute('aria-label', u.journey);
+  railEl.setAttribute('aria-label', u.scenes);
+  langToggle.setAttribute('aria-label', u.language);
+  langCurrent.textContent = LANGS.find((l) => l.code === code).label;
+
+  navEl.innerHTML = SLIDES
+    .map((s, i) => `<button type="button" data-goto="${i}"${i === current ? ' aria-current="true"' : ''}>${s.text[code].nav}</button>`)
+    .join('');
+  railEl.innerHTML = SLIDES
+    .map((s, i) => `<button type="button" data-goto="${i}"${i === current ? ' aria-current="true"' : ''} aria-label="${i + 1}. ${s.text[code].nav}"></button>`)
+    .join('');
+
+  document.querySelectorAll('.lang-menu button').forEach((b) => {
+    b.setAttribute('aria-selected', String(b.dataset.lang === code));
+  });
+
+  // 카피만 다시 그린다 — 미디어와 재생 상태는 건드리지 않는다
+  scenes.forEach((scene) => {
+    scene.el.querySelector('.slide-copy').innerHTML = copyHtml(scene.config, scene.i, code);
+    scene.segs = [...scene.el.querySelectorAll('.seg')];
+    paintSegs(scene);
+    // 이미지는 진행 바와 타이머를 같이 맞춰 다시 시작한다 (영상은 그대로 재생)
+    if (scene === scenes[current] && scene.media.length > 1 && !reduceMotion
+        && scene.config.media[scene.index].type === 'image') {
+      clearTimeout(scene.timer);
+      scene.timer = setTimeout(() => advance(scene), IMAGE_HOLD);
+    }
+  });
+}
+
+function closeLang() {
+  langBox.classList.remove('is-open');
+  langToggle.setAttribute('aria-expanded', 'false');
+}
+
+langToggle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const open = langBox.classList.toggle('is-open');
+  langToggle.setAttribute('aria-expanded', String(open));
+});
+
+document.querySelector('.lang-menu').addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-lang]');
+  if (!btn) return;
+  applyLang(btn.dataset.lang);
+  closeLang();
+  langToggle.focus();
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.lang')) closeLang();
+});
+
+/* ── 장면 전환 (디졸브) ─────────────── */
+function paintChrome(idx) {
+  root.style.setProperty('--accent', scenes[idx].config.accent);
+  navEl.querySelectorAll('button').forEach((b, i) => b.setAttribute('aria-current', String(i === idx)));
+  railEl.querySelectorAll('button').forEach((d, i) => d.setAttribute('aria-current', String(i === idx)));
+  hint.classList.toggle('is-visible', idx === 0);
+}
+
+function goTo(next) {
+  if (busy || next === current || next < 0 || next >= scenes.length) return;
+  busy = true;
+  hint.classList.remove('is-visible');
+
+  const SCENE = ms('--scene');
+  const from = scenes[current];
+  const to = scenes[next];
+
+  stopScene(from);
+  from.el.classList.remove('is-active');
+  from.el.classList.add('is-leaving');
+
+  // 다음 장면을 먼저 완전히 깔아 둔다 — 광량이 한 번도 꺼지지 않는다
+  to.el.classList.add('is-active', 'is-entering');
+  current = next;
+  paintChrome(next);
+  startScene(to);
+
+  setTimeout(() => {
+    from.el.classList.remove('is-leaving');
+    to.el.classList.remove('is-entering');
+    busy = false;
+  }, SCENE);
+}
+
+const stepSlide = (dir) => goTo(current + dir);
+
+/* ── 입력 ───────────────────────────── */
+let wheelAcc = 0;
+let wheelTimer = null;
+window.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  if (busy) return;
+  if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+  wheelAcc += e.deltaY;
+  clearTimeout(wheelTimer);
+  wheelTimer = setTimeout(() => { wheelAcc = 0; }, 160);
+  if (Math.abs(wheelAcc) > 42) {
+    stepSlide(wheelAcc > 0 ? 1 : -1);
+    wheelAcc = 0;
+  }
+}, { passive: false });
+
+let touch = null;
+window.addEventListener('touchstart', (e) => {
+  touch = { x: e.touches[0].clientX, y: e.touches[0].clientY, used: false };
+}, { passive: true });
+window.addEventListener('touchmove', (e) => {
+  if (!touch || touch.used || busy) return;
+  const dx = touch.x - e.touches[0].clientX;
+  const dy = touch.y - e.touches[0].clientY;
+  if (Math.abs(dx) > Math.abs(dy)) {
+    if (Math.abs(dx) > 50) { stepMedia(dx > 0 ? 1 : -1); touch.used = true; }
+  } else if (Math.abs(dy) > 55) {
+    stepSlide(dy > 0 ? 1 : -1);
+    touch.used = true;
+  }
+}, { passive: true });
+window.addEventListener('touchend', () => { touch = null; });
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && langBox.classList.contains('is-open')) {
+    closeLang(); langToggle.focus(); return;
+  }
+  if (langBox.classList.contains('is-open')) return;
+
+  const vertical = { ArrowDown: 1, PageDown: 1, ' ': 1, ArrowUp: -1, PageUp: -1 };
+  const horizontal = { ArrowRight: 1, ArrowLeft: -1 };
+  if (e.key in vertical) { e.preventDefault(); stepSlide(vertical[e.key]); }
+  else if (e.key in horizontal) { e.preventDefault(); stepMedia(horizontal[e.key]); }
+  else if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+  else if (e.key === 'End') { e.preventDefault(); goTo(scenes.length - 1); }
+});
+
+document.addEventListener('click', (e) => {
+  const goBtn = e.target.closest('[data-goto]');
+  if (goBtn) { e.preventDefault(); goTo(Number(goBtn.dataset.goto)); return; }
+  const mediaBtn = e.target.closest('[data-media]');
+  if (mediaBtn) { e.preventDefault(); stepMedia(Number(mediaBtn.dataset.media)); }
+});
+
+// 탭이 가려지면 재생과 타이머를 멈춘다
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) stopScene(scenes[current]);
+  else if (!busy) playCurrent(scenes[current]);
+});
+
+applyLang(lang);
+paintChrome(0);
+startScene(scenes[0]);
+</script>
+
+</body>
+</html>
