@@ -340,23 +340,61 @@
 
   :focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 
-  /* ── 모바일 ─────────────────────────── */
+  /* ── 모바일: 시네마 프레임 ──────────────
+     카운터+진행바는 헤더 아래 상단으로, 카피는 낮고 컴팩트하게 —
+     화면 중앙 절반을 미디어에 완전히 내준다 */
   @media (max-width: 860px) {
     :root {
-      --h1: clamp(32px, 9.4vw, 54px);
-      --h1-max: 54px;
-      --copy-w: 90vw;
+      --h1: clamp(28px, 8vw, 38px);
+      --h1-max: 38px;
+      --copy-w: 100vw;
     }
     .site-header { padding: 16px 18px; }
     .main-nav { display: none; }
     .brand-name { font-size: 16px; }
     .lang-toggle, .order-btn { padding: 9px 14px; font-size: 12.5px; }
     .lang-toggle svg { display: none; }
-    .slide-copy { padding: 0 0 13vh 6vw; }
-    .slide-sub { font-size: 15px; max-width: none; margin-bottom: 24px; }
-    .slide-title { margin-bottom: 18px; }
-    .chip { padding: 8px 14px; font-size: 12.5px; }
-    .cta-primary, .cta-secondary { padding: 13px 24px; font-size: 14px; }
+
+    .slide-meta {
+      position: fixed;
+      top: calc(env(safe-area-inset-top, 0px) + 60px);
+      left: 5vw;
+      right: 5vw;
+      margin-bottom: 0;
+      z-index: 20;
+    }
+    .slide-meta .media-bar { flex: 1; }
+    .slide-meta .segs { flex: 1; }
+    .slide-meta .seg { width: auto; flex: 1; }
+
+    .slide-copy { padding: 0 5vw calc(env(safe-area-inset-bottom, 0px) + 28px) 5vw; }
+    .slide-eyebrow { font-size: 12px; letter-spacing: 0.24em; margin-bottom: 10px; }
+    .slide-title {
+      line-height: 1.16;
+      margin-bottom: 10px;
+      text-shadow: 0 1px 14px rgba(10, 8, 6, 0.45);
+    }
+    .slide-sub {
+      font-size: 13.5px;
+      line-height: 1.55;
+      max-width: none;
+      margin-bottom: 14px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-shadow: 0 1px 12px rgba(10, 8, 6, 0.4);
+    }
+    .chip { padding: 6px 12px; font-size: 12px; }
+
+    /* 좌측 어둠 제거 — 하단 스크림(카피용) + 상단 스크림(메타용)만 */
+    .slide-media::after {
+      background:
+        linear-gradient(to top, rgba(10, 8, 6, 0.88) 0%, rgba(10, 8, 6, 0.64) 22%, rgba(10, 8, 6, 0.14) 40%, transparent 52%),
+        linear-gradient(to bottom, rgba(10, 8, 6, 0.55) 0%, rgba(10, 8, 6, 0.25) 12%, transparent 24%);
+    }
+
     .progress-rail { right: 12px; }
     .scroll-hint { display: none; }
   }
