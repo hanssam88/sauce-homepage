@@ -317,6 +317,31 @@
   }
   .progress-rail button[aria-current='true'] { height: 22px; background: var(--accent); }
 
+  /* ── 미디어 캡션 (소스·요리 이름) ────── */
+  .media-caption {
+    position: fixed;
+    z-index: 25;
+    right: 56px;
+    bottom: calc(6vh + 48px);
+    padding: 9px 16px;
+    border-radius: 999px;
+    background: rgba(12, 9, 7, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    max-width: 70vw;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+    pointer-events: none;
+  }
+  .media-caption.is-visible { opacity: 1; transform: none; }
+
   /* ── 스크롤 힌트 ────────────────────── */
   .scroll-hint {
     position: fixed; right: 5vw; bottom: 6vh; z-index: 30;
@@ -339,6 +364,17 @@
   }
 
   :focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+  @media (max-width: 860px) {
+    .media-caption {
+      right: auto;
+      bottom: auto;
+      top: calc(env(safe-area-inset-top, 0px) + 96px);
+      left: 5vw;
+      font-size: 12.5px;
+      padding: 8px 14px;
+    }
+  }
 
   /* ── 모바일: 시네마 프레임 ──────────────
      카운터+진행바는 헤더 아래 상단으로, 카피는 낮고 컴팩트하게 —
@@ -410,6 +446,7 @@
     .slide.is-active .slide-copy > * { animation: none; opacity: 1; transform: none; }
     .slide.is-leaving .slide-copy { animation: none; opacity: 0; }
     .scroll-hint::after { animation: none; }
+    .media-caption { transition: none; transform: none; }
   }
 </style>
 </head>
@@ -446,6 +483,7 @@
 <nav class="progress-rail"></nav>
 
 <p class="scroll-hint is-visible"></p>
+<p class="media-caption" aria-live="polite"></p>
 
 <main class="deck"></main>
 
@@ -505,14 +543,22 @@ const SLIDES = [
     accent: '#7d8a3a',
     eyebrow: '#bcc76d',
     media: [
-      { type: 'video', src: 'assets/vid-onion.mp4', poster: 'assets/poster-onion.jpg', alt: '양파 단면 클로즈업' },
-      { type: 'image', src: 'assets/img-ingredients.png', alt: '고추, 콩, 쌀 등 장을 이루는 재료와 고추장 병' },
-      { type: 'image', src: 'assets/img-flatlay-soy.png', alt: '콩, 다시마, 마늘 등 재료와 간장 병' },
-      { type: 'image', src: 'assets/img-flatlay-mayo.png', alt: '달걀, 기름, 레몬과 함께 놓인 마요네즈 병' },
-      { type: 'image', src: 'assets/img-flatlay-mustard.png', alt: '꿀, 레몬, 머스터드씨와 함께 놓인 허니머스터드 병' },
-      { type: 'image', src: 'assets/img-flatlay-chili.png', alt: '고추, 마늘과 함께 놓인 칠리소스 병' },
-      { type: 'image', src: 'assets/img-green.png', alt: '아보카도, 라임, 고수와 함께 놓인 허브 그린 소스 병' },
-      { type: 'image', src: 'assets/img-flatlay-pouch.png', alt: '고기, 배, 양파와 함께 놓인 대용량 소스 파우치' },
+      { type: 'video', src: 'assets/vid-onion.mp4', poster: 'assets/poster-onion.jpg', alt: '양파 단면 클로즈업',
+        cap: { ko: '원물', en: 'Raw ingredients', ja: '原料', zh: '原料', es: 'Ingredientes' } },
+      { type: 'image', src: 'assets/img-ingredients.png', alt: '고추, 콩, 쌀 등 장을 이루는 재료와 고추장 병',
+        cap: { ko: '고추장', en: 'Gochujang', ja: 'コチュジャン', zh: '韩式辣酱', es: 'Gochujang' } },
+      { type: 'image', src: 'assets/img-flatlay-soy.png', alt: '콩, 다시마, 마늘 등 재료와 간장 병',
+        cap: { ko: '맛간장', en: 'Seasoned soy sauce', ja: 'だし醤油', zh: '调味酱油', es: 'Soja sazonada' } },
+      { type: 'image', src: 'assets/img-flatlay-mayo.png', alt: '달걀, 기름, 레몬과 함께 놓인 마요네즈 병',
+        cap: { ko: '마요네즈', en: 'Mayonnaise', ja: 'マヨネーズ', zh: '蛋黄酱', es: 'Mayonesa' } },
+      { type: 'image', src: 'assets/img-flatlay-mustard.png', alt: '꿀, 레몬, 머스터드씨와 함께 놓인 허니머스터드 병',
+        cap: { ko: '허니 머스터드', en: 'Honey mustard', ja: 'ハニーマスタード', zh: '蜂蜜芥末酱', es: 'Mostaza con miel' } },
+      { type: 'image', src: 'assets/img-flatlay-chili.png', alt: '고추, 마늘과 함께 놓인 칠리소스 병',
+        cap: { ko: '칠리소스', en: 'Chili sauce', ja: 'チリソース', zh: '辣椒酱', es: 'Salsa de chile' } },
+      { type: 'image', src: 'assets/img-green.png', alt: '아보카도, 라임, 고수와 함께 놓인 허브 그린 소스 병',
+        cap: { ko: '아보카도 그린소스', en: 'Avocado green sauce', ja: 'アボカドグリーンソース', zh: '牛油果青酱', es: 'Salsa verde de aguacate' } },
+      { type: 'image', src: 'assets/img-flatlay-pouch.png', alt: '고기, 배, 양파와 함께 놓인 대용량 소스 파우치',
+        cap: { ko: '불고기 양념', en: 'Bulgogi marinade', ja: 'プルコギだれ', zh: '烤肉腌酱', es: 'Marinada bulgogi' } },
     ],
     text: {
       ko: { nav: '원물', label: '재료에서 시작합니다', title: '재료에서,<br />마지막 한 술까지.',
@@ -536,10 +582,14 @@ const SLIDES = [
     accent: '#c8402e',
     eyebrow: '#e0684f',
     media: [
-      { type: 'video', src: 'assets/vid-bibimbap3.mp4', poster: 'assets/poster-bibimbap3.jpg', alt: '나물과 버섯 위에 올린 고추장' },
-      { type: 'video', src: 'assets/vid-naengmyeon.mp4', poster: 'assets/poster-naengmyeon.jpg', alt: '냉면' },
-      { type: 'video', src: 'assets/vid-sundubu.mp4', poster: 'assets/poster-sundubu.jpg', alt: '순두부찌개' },
-      { type: 'video', src: 'assets/vid-mayo-making.mp4', poster: 'assets/poster-mayo-making.jpg', alt: '기름을 부어 마요네즈를 만드는 모습' },
+      { type: 'video', src: 'assets/vid-bibimbap3.mp4', poster: 'assets/poster-bibimbap3.jpg', alt: '나물과 버섯 위에 올린 고추장',
+        cap: { ko: '나물 무침', en: 'Seasoned greens', ja: 'ナムル', zh: '拌菜', es: 'Verduras aliñadas' } },
+      { type: 'video', src: 'assets/vid-naengmyeon.mp4', poster: 'assets/poster-naengmyeon.jpg', alt: '냉면',
+        cap: { ko: '냉면', en: 'Cold noodles', ja: '冷麺', zh: '冷面', es: 'Fideos fríos' } },
+      { type: 'video', src: 'assets/vid-sundubu.mp4', poster: 'assets/poster-sundubu.jpg', alt: '순두부찌개',
+        cap: { ko: '순두부찌개', en: 'Soft tofu stew', ja: 'スンドゥブチゲ', zh: '嫩豆腐汤', es: 'Estofado de tofu' } },
+      { type: 'video', src: 'assets/vid-mayo-making.mp4', poster: 'assets/poster-mayo-making.jpg', alt: '기름을 부어 마요네즈를 만드는 모습',
+        cap: { ko: '수제 마요네즈', en: 'Homemade mayo', ja: '自家製マヨ', zh: '自制蛋黄酱', es: 'Mayonesa casera' } },
     ],
     text: {
       ko: { nav: '주방', label: '매일의 주방에서', title: '요리는 쉽게,<br />맛은 깊게.',
@@ -590,12 +640,18 @@ const SLIDES = [
     accent: '#cf8f34',
     eyebrow: '#ecb769',
     media: [
-      { type: 'video', src: 'assets/vid-dish-bibimbap.mp4', poster: 'assets/poster-dish-bibimbap.jpg', alt: '비빔밥에 고추장을 짜서 올리는 모습' },
-      { type: 'video', src: 'assets/vid-dish-tteokbokki.mp4', poster: 'assets/poster-dish-tteokbokki.jpg', alt: '고추장 떡볶이와 제육볶음' },
-      { type: 'video', src: 'assets/vid-dish-sandwich.mp4', poster: 'assets/poster-dish-sandwich.jpg', alt: '샌드위치에 마요네즈를 짜는 모습' },
-      { type: 'video', src: 'assets/vid-dish-salad.mp4', poster: 'assets/poster-dish-salad.jpg', alt: '샐러드에 드레싱을 붓는 모습' },
-      { type: 'video', src: 'assets/vid-dish-shrimp.mp4', poster: 'assets/poster-dish-shrimp.jpg', alt: '새우에 간장 소스를 붓는 모습' },
-      { type: 'video', src: 'assets/vid-dip-celery.mp4', poster: 'assets/poster-dip-celery.jpg', alt: '셀러리를 마요네즈에 찍는 모습' },
+      { type: 'video', src: 'assets/vid-dish-bibimbap.mp4', poster: 'assets/poster-dish-bibimbap.jpg', alt: '비빔밥에 고추장을 짜서 올리는 모습',
+        cap: { ko: '고추장 비빔밥', en: 'Gochujang bibimbap', ja: 'コチュジャンビビンバ', zh: '辣酱拌饭', es: 'Bibimbap con gochujang' } },
+      { type: 'video', src: 'assets/vid-dish-tteokbokki.mp4', poster: 'assets/poster-dish-tteokbokki.jpg', alt: '고추장 떡볶이와 제육볶음',
+        cap: { ko: '고추장 떡볶이', en: 'Tteokbokki', ja: 'トッポッキ', zh: '辣炒年糕', es: 'Tteokbokki' } },
+      { type: 'video', src: 'assets/vid-dish-sandwich.mp4', poster: 'assets/poster-dish-sandwich.jpg', alt: '샌드위치에 마요네즈를 짜는 모습',
+        cap: { ko: '마요 샌드위치', en: 'Mayo sandwich', ja: 'マヨサンド', zh: '蛋黄酱三明治', es: 'Sándwich con mayonesa' } },
+      { type: 'video', src: 'assets/vid-dish-salad.mp4', poster: 'assets/poster-dish-salad.jpg', alt: '샐러드에 드레싱을 붓는 모습',
+        cap: { ko: '드레싱 샐러드', en: 'Dressed salad', ja: 'ドレッシングサラダ', zh: '沙拉', es: 'Ensalada' } },
+      { type: 'video', src: 'assets/vid-dish-shrimp.mp4', poster: 'assets/poster-dish-shrimp.jpg', alt: '새우에 간장 소스를 붓는 모습',
+        cap: { ko: '간장새우', en: 'Soy sauce shrimp', ja: 'カンジャンセウ', zh: '酱油虾', es: 'Gambas en soja' } },
+      { type: 'video', src: 'assets/vid-dip-celery.mp4', poster: 'assets/poster-dip-celery.jpg', alt: '셀러리를 마요네즈에 찍는 모습',
+        cap: { ko: '마요 딥', en: 'Mayo dip', ja: 'マヨディップ', zh: '蛋黄酱蘸食', es: 'Dip de mayonesa' } },
     ],
     text: {
       ko: { nav: '식탁', label: '매일의 한 끼에', title: '한 스푼에,<br />오늘 한 끼 완성.',
@@ -687,6 +743,7 @@ const slideEls = [...deck.querySelectorAll('.slide')];
 const navEl = document.querySelector('.main-nav');
 const railEl = document.querySelector('.progress-rail');
 const hint = document.querySelector('.scroll-hint');
+const capEl = document.querySelector('.media-caption');
 const langBox = document.querySelector('.lang');
 const langToggle = document.querySelector('.lang-toggle');
 const langCurrent = document.querySelector('.lang-current');
@@ -706,6 +763,18 @@ let current = 0;
 let busy = false;
 
 const ms = (name) => parseFloat(getComputedStyle(root).getPropertyValue(name)) || 0;
+
+/* ── 미디어 캡션 ────────────────────── */
+function updateCaption() {
+  const scene = scenes[current];
+  const cap = scene.config.media[scene.index].cap;
+  const text = cap ? cap[lang] : '';
+  if (!text) { capEl.classList.remove('is-visible'); return; }
+  capEl.classList.remove('is-visible');
+  void capEl.offsetWidth; // 페이드인을 처음부터 다시 돌린다
+  capEl.textContent = text;
+  capEl.classList.add('is-visible');
+}
 
 /* ── 장면 안 미디어 ─────────────────── */
 function stopScene(scene) {
@@ -765,6 +834,7 @@ function showMedia(scene, next, dir) {
   scene.index = (next + total) % total;
   paintSegs(scene);
   playCurrent(scene);
+  updateCaption();
 }
 
 function advance(scene) {
@@ -780,6 +850,7 @@ function startScene(scene) {
   });
   paintSegs(scene);
   playCurrent(scene);
+  updateCaption();
 }
 
 function stepMedia(dir) {
@@ -841,6 +912,7 @@ function applyLang(code) {
       scene.timer = setTimeout(() => advance(scene), IMAGE_HOLD);
     }
   });
+  updateCaption();
 }
 
 function closeLang() {
