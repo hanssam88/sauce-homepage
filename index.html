@@ -91,16 +91,16 @@
 
   /* ── 언어 전환 ──────────────────────── */
   .lang { position: relative; }
-  /* 언어 버튼은 배경에 녹아들게 — 로고와 주문 버튼에 시선을 양보한다 */
+  /* 언어 버튼은 하단 칩과 같은 컴포넌트 — 헤더에선 로고만 도드라진다 */
   .lang-toggle {
     font: inherit; cursor: pointer;
     display: flex; align-items: center; gap: 6px;
-    padding: 10px 16px; border-radius: 999px;
-    background: rgba(18, 12, 8, 0.38);
-    color: rgba(247, 238, 227, 0.92);
-    border: 1px solid rgba(247, 238, 227, 0.22);
-    backdrop-filter: blur(12px);
-    font-size: 13.5px; font-weight: 700;
+    padding: 9px 18px; border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.32);
+    backdrop-filter: blur(6px);
+    font-size: 13.5px; font-weight: 600;
   }
   .lang-toggle svg { width: 14px; height: 14px; opacity: 0.65; }
   .lang-toggle::after {
@@ -140,15 +140,6 @@
   .lang-menu button[aria-selected='true']::after {
     content: ''; width: 6px; height: 6px; border-radius: 999px; background: var(--accent);
   }
-
-  .order-btn {
-    padding: 13px 28px; border-radius: 999px;
-    background: var(--paper); color: #33291f;
-    font-size: 15px; font-weight: 800; text-decoration: none;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.22);
-    transition: transform 0.2s ease;
-  }
-  .order-btn:hover { transform: translateY(-1px); }
 
   /* ── 장면 스택 ──────────────────────── */
   .deck { position: fixed; inset: 0; }
@@ -394,8 +385,7 @@
     .site-header { padding: 16px 18px; }
     .main-nav { display: none; }
     .brand-name { font-size: 16px; }
-    .lang-toggle { padding: 9px 13px; font-size: 12.5px; }
-    .order-btn { padding: 12px 22px; font-size: 14px; }
+    .lang-toggle { padding: 6px 12px; font-size: 12px; }
     .lang-toggle svg { display: none; }
 
     .slide-meta {
@@ -480,7 +470,6 @@
       </button>
       <ul class="lang-menu" role="listbox"></ul>
     </div>
-    <a class="order-btn" href="#" data-goto="3"></a>
   </div>
 </header>
 
@@ -886,7 +875,6 @@ function applyLang(code) {
   root.lang = code;
   document.title = u.docTitle;
   document.querySelector('.brand-name').textContent = u.brand;
-  document.querySelector('.order-btn').textContent = u.order;
   hint.textContent = u.hint;
   navEl.setAttribute('aria-label', u.journey);
   railEl.setAttribute('aria-label', u.scenes);
