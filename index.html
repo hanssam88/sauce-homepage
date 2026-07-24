@@ -897,9 +897,8 @@ function goTo(next) {
 }
 
 const stepSlide = (dir) => {
-  let next = current + dir;
-  if (dir > 0 && next >= scenes.length) next = 0; // 마지막 장면에서 아래로 → 처음으로 순환
-  goTo(next);
+  // 양방향 무한 루프: 마지막에서 아래로 → 처음, 처음에서 위로 → 마지막
+  goTo((current + dir + scenes.length) % scenes.length);
 };
 
 /* ── 입력 ───────────────────────────── */
