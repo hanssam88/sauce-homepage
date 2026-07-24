@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>장&상 — 재료에서, 마지막 한 술까지</title>
+<title>찬지기 — 재료에서, 마지막 한 술까지</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
 <style>
   :root {
@@ -57,13 +57,14 @@
 
   .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #fff; }
   .brand-mark {
-    width: 34px; height: 34px;
+    width: 40px; height: 40px;
     border-radius: 10px;
-    background: linear-gradient(145deg, #d0492f, #8f2b1c);
+    background: #f7eee3;
     display: grid; place-items: center;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
   }
-  .brand-mark svg { width: 18px; height: 18px; }
+  .brand-mark img { width: 34px; height: 34px; object-fit: contain; }
   .brand-name {
     font-weight: 800; font-size: 17px; letter-spacing: -0.01em;
     text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
@@ -455,10 +456,7 @@
 <header class="site-header">
   <a class="brand" href="#" data-goto="0">
     <span class="brand-mark" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none">
-        <ellipse cx="12" cy="7.5" rx="5" ry="6" fill="#fff"/>
-        <rect x="10.8" y="12" width="2.4" height="9" rx="1.2" fill="#fff"/>
-      </svg>
+      <img src="assets/logo-mark.png" alt="" />
     </span>
     <span class="brand-name"></span>
   </a>
@@ -502,36 +500,36 @@ const LANGS = [
 
 const UI = {
   ko: {
-    brand: '장&상', order: '주문하기',
-    docTitle: '장&상 — 재료에서, 마지막 한 술까지',
+    brand: '찬지기', order: '주문하기',
+    docTitle: '찬지기 — 재료에서, 마지막 한 술까지',
     hint: '스크롤해서 다음 장면으로 넘겨 보세요',
     journey: '여정', scenes: '장면 이동', language: '언어 선택',
     prevMedia: '이전 미디어', nextMedia: '다음 미디어',
   },
   en: {
-    brand: 'Jang&Sang', order: 'Order',
-    docTitle: 'Jang&Sang — From the field to the last spoon',
+    brand: 'CHANJIGI', order: 'Order',
+    docTitle: 'CHANJIGI — From the field to the last spoon',
     hint: 'Scroll to move to the next scene',
     journey: 'Journey', scenes: 'Go to scene', language: 'Choose language',
     prevMedia: 'Previous media', nextMedia: 'Next media',
   },
   ja: {
-    brand: 'チャン&サン', order: '注文する',
-    docTitle: 'チャン&サン — 素材から、最後のひと匙まで',
+    brand: 'CHANJIGI', order: '注文する',
+    docTitle: 'CHANJIGI — 素材から、最後のひと匙まで',
     hint: 'スクロールして次の場面へ',
     journey: '道のり', scenes: '場面へ移動', language: '言語を選ぶ',
     prevMedia: '前のメディア', nextMedia: '次のメディア',
   },
   zh: {
-    brand: '酱&尚', order: '立即订购',
-    docTitle: '酱&尚 — 从原料，到最后一勺',
+    brand: 'CHANJIGI', order: '立即订购',
+    docTitle: 'CHANJIGI — 从原料，到最后一勺',
     hint: '滚动切换到下一个场景',
     journey: '历程', scenes: '跳转场景', language: '选择语言',
     prevMedia: '上一个', nextMedia: '下一个',
   },
   es: {
-    brand: 'Jang&Sang', order: 'Pedir',
-    docTitle: 'Jang&Sang — Del campo a la última cucharada',
+    brand: 'CHANJIGI', order: 'Pedir',
+    docTitle: 'CHANJIGI — Del campo a la última cucharada',
     hint: 'Desplázate para pasar a la siguiente escena',
     journey: 'Recorrido', scenes: 'Ir a la escena', language: 'Elegir idioma',
     prevMedia: 'Anterior', nextMedia: 'Siguiente',
