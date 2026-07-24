@@ -215,7 +215,20 @@
     padding: 0 0 9vh 5vw;
   }
 
-  .slide-meta { display: flex; align-items: center; gap: 18px; margin-bottom: 16px; }
+  .slide-meta {
+    position: fixed;
+    left: 5vw;
+    right: 5vw;
+    bottom: max(24px, 4vh);
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 0;
+  }
+  .slide-meta .media-bar { flex: 1; min-width: 0; }
+  .slide-meta .segs { flex: 1; min-width: 0; }
+  .slide-meta .seg { width: auto; flex: 1; }
 
   .slide-counter {
     font-family: var(--font-mono);
@@ -225,7 +238,7 @@
   }
 
   /* 장면 안 미디어 이동 · 진행 표시 */
-  .media-bar { display: flex; align-items: center; gap: 10px; }
+  .media-bar { display: flex; align-items: center; gap: 10px; min-width: 0; }
   .media-bar button {
     width: 24px; height: 24px;
     display: grid; place-items: center;
@@ -238,7 +251,7 @@
   }
   .media-bar button:hover { background: rgba(255, 255, 255, 0.3); }
 
-  .segs { display: flex; gap: 5px; }
+  .segs { display: flex; gap: 5px; min-width: 0; }
   .seg {
     width: 24px; height: 3px; border-radius: 999px;
     background: rgba(255, 255, 255, 0.3);
@@ -341,7 +354,7 @@
 
   /* ── 스크롤 힌트 ────────────────────── */
   .scroll-hint {
-    position: fixed; right: 5vw; bottom: 6vh; z-index: 30;
+    position: fixed; right: 5vw; bottom: calc(max(24px, 4vh) + 42px); z-index: 30;
     font-size: 12.5px; letter-spacing: 0.14em;
     color: rgba(255, 255, 255, 0.85);
     display: flex; align-items: center; gap: 10px;
@@ -389,18 +402,15 @@
     .lang-toggle svg { display: none; }
 
     .slide-meta {
-      position: fixed;
-      top: calc(env(safe-area-inset-top, 0px) + 60px);
-      left: 5vw;
-      right: 5vw;
-      margin-bottom: 0;
-      z-index: 20;
+      top: auto;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+      gap: 10px;
     }
     .slide-meta .media-bar { flex: 1; }
     .slide-meta .segs { flex: 1; }
     .slide-meta .seg { width: auto; flex: 1; }
 
-    .slide-copy { padding: 0 5vw calc(env(safe-area-inset-bottom, 0px) + 28px) 5vw; }
+    .slide-copy { padding: 0 5vw calc(env(safe-area-inset-bottom, 0px) + 72px) 5vw; }
     .slide-eyebrow { font-size: 12px; letter-spacing: 0.24em; margin-bottom: 10px; }
     .slide-title {
       line-height: 1.16;
@@ -536,8 +546,7 @@ const SLIDES = [
     accent: '#7d8a3a',
     eyebrow: '#bcc76d',
     media: [
-      { type: 'video', src: 'assets/vid-onion.mp4', poster: 'assets/poster-onion.jpg', alt: '양파 단면 클로즈업',
-        cap: { ko: '원물', en: 'Raw ingredients', ja: '原料', zh: '原料', es: 'Ingredientes' } },
+      { type: 'video', src: 'assets/vid-onion.mp4', poster: 'assets/poster-onion.jpg', alt: '양파 단면 클로즈업' },
       { type: 'image', src: 'assets/img-ingredients.png', alt: '고추, 콩, 쌀 등 장을 이루는 재료와 고추장 병',
         cap: { ko: '고추장', en: 'Gochujang', ja: 'コチュジャン', zh: '韩式辣酱', es: 'Gochujang' } },
       { type: 'image', src: 'assets/img-flatlay-soy.png', alt: '콩, 다시마, 마늘 등 재료와 간장 병',
