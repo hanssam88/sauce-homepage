@@ -861,9 +861,6 @@ document.querySelector('.lang-menu').addEventListener('click', (e) => {
   langToggle.focus();
 });
 
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.lang')) closeLang();
-});
 
 /* ── 장면 전환 (디졸브) ─────────────── */
 function paintChrome(idx) {
@@ -899,7 +896,11 @@ function goTo(next) {
   }, SCENE);
 }
 
-const stepSlide = (dir) => goTo(current + dir);
+const stepSlide = (dir) => {
+  let next = current + dir;
+  if (dir > 0 && next >= scenes.length) next = 0; // 마지막 장면에서 아래로 → 처음으로 순환
+  goTo(next);
+};
 
 /* ── 입력 ───────────────────────────── */
 let wheelAcc = 0;
@@ -949,10 +950,23 @@ window.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('click', (e) => {
+  // 언어 메뉴가 열려 있으면: 메뉴 밖 클릭은 닫기만 하고 소비한다
+  if (langBox.classList.contains('is-open') && !e.target.closest('.lang')) {
+    closeLang();
+    return;
+  }
+
   const goBtn = e.target.closest('[data-goto]');
   if (goBtn) { e.preventDefault(); goTo(Number(goBtn.dataset.goto)); return; }
   const mediaBtn = e.target.closest('[data-media]');
-  if (mediaBtn) { e.preventDefault(); stepMedia(Number(mediaBtn.dataset.media)); }
+  if (mediaBtn) { e.preventDefault(); stepMedia(Number(mediaBtn.dataset.media)); return; }
+
+  // 화면 좌/우 탭 → 현재 장면의 미디어 이동 (스토리즈 방식, 가운데 30%는 중립)
+  if (e.target.closest('.site-header') || e.target.closest('.progress-rail')) return;
+  if (!e.target.closest('.slide')) return;
+  const x = e.clientX / innerWidth;
+  if (x <= 0.35) stepMedia(-1);
+  else if (x >= 0.65) stepMedia(1);
 });
 
 // 탭이 가려지면 재생과 타이머를 멈춘다
