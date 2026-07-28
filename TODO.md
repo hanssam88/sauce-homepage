@@ -8,9 +8,10 @@
 
 - A/B/C 비교 시안 구현 완료:
   `concepts/a-editorial/`, `concepts/b-cinematic/`, `concepts/c-gallery/`
-- Playwright 전체 계약 테스트: 14/14 통과
+- Playwright 전체 계약 테스트: 15/15 통과
 - 동일 조건 비교 캡처: 9개 생성
   (`artifacts/screenshots/`, 데스크톱 1440×900·모바일 390×844)
+- 최종 리뷰 중요 이슈 2건(시네마틱 캡처 재현성·강조 문구 대비) 수정 및 재검토 완료
 - `./scripts/verify-root-untouched.sh` 통과: 루트 `index.html`과 `assets/` 변경 없음
 - 원격 push·PR 없음
 - 다음 단계: 사용자가 A/B/C 방향을 선택한 뒤 선택안만 운영 수준으로 확장
