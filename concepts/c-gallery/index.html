@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="좋은 재료에서 매일의 식탁까지 이어지는 찬지기의 현대적 푸드 갤러리">
+    <title>찬지기 — 재료에서, 마지막 한 술까지</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body data-concept="c-gallery">
+    <a class="skip-link" href="#hero">본문으로 바로가기</a>
+
+    <header class="site-header">
+      <a class="brand" href="#hero" aria-label="찬지기 홈">찬지기</a>
+      <nav aria-label="페이지 섹션">
+        <a href="#philosophy">기준</a>
+        <a href="#process">과정</a>
+        <a href="#table">식탁</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="hero" class="hero gallery-grid" data-section="hero">
+        <div class="hero__copy frame">
+          <p class="eyebrow">매일 쓰는 소스의 기준</p>
+          <h1>재료에서,<br>마지막 한 술까지.</h1>
+          <p class="hero__intro">좋은 원물을 고르고, 깨끗하게 만들고, 오늘의 식탁에 가장 쉬운 한 술을 건넵니다.</p>
+          <a class="text-link" href="#table">오늘의 식탁 보기</a>
+        </div>
+        <figure class="hero__image frame">
+          <img src="../../assets/img-flatlay-soy.png" alt="콩과 쌀, 배 곁에 놓인 찬지기 간장 소스">
+          <figcaption>원물의 맛을 가볍게 더하는 한 병</figcaption>
+        </figure>
+      </section>
+
+      <section id="philosophy" class="principles" data-section="philosophy">
+        <header class="section-heading frame">
+          <p class="eyebrow">찬지기의 세 가지 기준</p>
+          <h2>한 병을 만드는 일은<br>세 번의 살핌입니다.</h2>
+        </header>
+        <div class="principles__grid gallery-grid">
+          <article class="principle frame">
+            <p class="principle__label">원물</p>
+            <h3>맛의 시작을 고릅니다.</h3>
+            <p>제철의 향과 단맛이 또렷한 재료를 먼저 살핍니다.</p>
+          </article>
+          <article class="principle frame">
+            <p class="principle__label">주방</p>
+            <h3>매일 쓰기 쉽게 다듬습니다.</h3>
+            <p>한 술만으로도 익숙한 요리의 맛이 깊어지도록 맞춥니다.</p>
+          </article>
+          <article class="principle principle--process frame">
+            <div>
+              <p class="principle__label">제조</p>
+              <h3>담는 순간까지 깨끗하게.</h3>
+              <p>정돈된 생산 라인에서 꼼꼼히 확인하고 바로 밀봉합니다.</p>
+            </div>
+            <img src="../../assets/factory-pouch.jpg" alt="소스 파우치를 살피는 찬지기 생산 현장">
+          </article>
+        </div>
+      </section>
+
+      <section id="process" class="process gallery-grid" data-section="process">
+        <div class="process__statement frame">
+          <p class="eyebrow">재료가 식탁에 닿기까지</p>
+          <h2>고르는 일부터 담는 일까지,<br>한결같이 단정하게.</h2>
+        </div>
+        <ol class="process__steps frame">
+          <li><span>고르기</span>향과 맛이 또렷한 원물을 살핍니다.</li>
+          <li><span>다듬기</span>재료의 결을 해치지 않게 조리합니다.</li>
+          <li><span>담기</span>깨끗한 공정에서 바로 밀봉합니다.</li>
+        </ol>
+      </section>
+
+      <section id="table" class="table" data-section="table">
+        <header class="section-heading section-heading--table frame">
+          <p class="eyebrow">오늘의 여섯 접시</p>
+          <h2>한 스푼에,<br>오늘 한 끼 완성.</h2>
+          <p>익숙한 한 끼에 찬지기 한 술을 더해 보세요. 요리는 쉬워지고, 재료의 맛은 더 또렷해집니다.</p>
+        </header>
+
+        <div class="gallery-grid" aria-label="찬지기 식탁 갤러리">
+          <article class="gallery-card gallery-card--wide frame" data-gallery-card tabindex="0" style="--delay: 0ms">
+            <figure>
+              <div class="gallery-card__image">
+                <img src="../../assets/poster-dish-bibimbap.jpg" alt="고추장을 곁들인 비빔밥">
+              </div>
+              <figcaption>
+                <span>비빔밥</span>
+                <small>고추장 한 술로 깊고 선명하게</small>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article class="gallery-card gallery-card--tall frame" data-gallery-card tabindex="0" style="--delay: 14ms">
+            <figure>
+              <div class="gallery-card__image">
+                <img src="../../assets/poster-dish-tteokbokki.jpg" alt="매콤한 양념의 떡볶이">
+              </div>
+              <figcaption>
+                <span>떡볶이</span>
+                <small>매콤달콤한 맛을 한 번에</small>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article class="gallery-card gallery-card--third frame" data-gallery-card tabindex="0" style="--delay: 28ms">
+            <figure>
+              <div class="gallery-card__image">
+                <img src="../../assets/poster-dish-sandwich.jpg" alt="신선한 채소를 채운 샌드위치">
+              </div>
+              <figcaption>
+                <span>채소 샌드위치</span>
+                <small>고소한 소스로 산뜻하게</small>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article class="gallery-card gallery-card--third frame" data-gallery-card tabindex="0" style="--delay: 42ms">
+            <figure>
+              <div class="gallery-card__image">
+                <img src="../../assets/poster-dish-salad.jpg" alt="채소와 달걀을 담은 샐러드">
+              </div>
+              <figcaption>
+                <span>제철 채소 샐러드</span>
+                <small>담백한 한 술로 가볍게</small>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article class="gallery-card gallery-card--third frame" data-gallery-card tabindex="0" style="--delay: 56ms">
+            <figure>
+              <div class="gallery-card__image">
+                <img src="../../assets/poster-dish-shrimp.jpg" alt="노릇하게 구운 새우 요리">
+              </div>
+              <figcaption>
+                <span>구운 새우</span>
+                <small>알싸한 풍미를 산뜻하게</small>
+              </figcaption>
+            </figure>
+          </article>
+
+          <article class="gallery-card gallery-card--last frame" data-gallery-card tabindex="0" style="--delay: 70ms">
+            <figure>
+              <div class="gallery-card__image">
+                <img src="../../assets/poster-dip-celery.jpg" alt="소스를 곁들인 셀러리">
+              </div>
+              <figcaption>
+                <span>셀러리와 딥</span>
+                <small>아삭한 채소를 더 맛있게</small>
+              </figcaption>
+            </figure>
+          </article>
+
+          <aside class="gallery-note frame">
+            <p>좋은 소스는 앞에 나서지 않습니다.</p>
+            <strong>재료의 맛을 살리고,<br>한 끼의 수고를 덜어줍니다.</strong>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer frame">
+      <p>찬지기</p>
+      <p>오늘의 식탁을 위한 단정한 한 술</p>
+    </footer>
+  </body>
+</html>

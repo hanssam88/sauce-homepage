@@ -87,3 +87,12 @@ test("B keeps visible brand labels in Korean", async ({ page }) => {
   await expect(page.locator(".brand")).toHaveText("찬지기");
   await expect(page.locator(".philosophy__label")).toHaveText("찬지기 · 우리의 기준");
 });
+
+test("C exposes a framed image grid with focusable cards", async ({ page }) => {
+  await page.goto("/concepts/c-gallery/");
+  await expect(page.locator("[data-gallery-card]")).toHaveCount(6);
+  const cards = page.locator("[data-gallery-card]");
+  for (let index = 0; index < 6; index += 1) {
+    await expect(cards.nth(index)).toHaveAttribute("tabindex", "0");
+  }
+});
