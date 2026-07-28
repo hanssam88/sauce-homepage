@@ -44,7 +44,31 @@ for (const concept of concepts) {
 
 test("A uses editorial chapters and visible Korean copy", async ({ page }) => {
   await page.goto("/concepts/a-editorial/");
-  await expect(page.locator("[data-chapter]")).toHaveCount(3);
+  const chapters = page.locator("[data-chapter]");
+  await expect(chapters).toHaveCount(3);
+  await expect.soft(chapters.locator("h2")).toHaveText([
+    "재료에서, 마지막 한 술까지.",
+    "담는 순간까지, 깨끗하게.",
+    "한 스푼에, 오늘 한 끼 완성."
+  ]);
+  await expect.soft(chapters.locator(":scope > img")).toHaveCount(3);
+
+  const imageSides = await chapters.evaluateAll((elements) => (
+    elements.map((chapter) => {
+      const image = chapter.querySelector(":scope > img");
+      const heading = chapter.querySelector("h2");
+      if (!image || !heading) return "missing";
+      return image.getBoundingClientRect().left > heading.getBoundingClientRect().left
+        ? "right"
+        : "left";
+    })
+  ));
+  expect.soft(imageSides).toEqual(["right", "left", "right"]);
+
+  const heroHeading = await page.locator('[data-section="hero"] h1').boundingBox();
+  const heroImage = await page.locator('[data-section="hero"] img').boundingBox();
+  expect.soft(heroHeading.x + heroHeading.width).toBeLessThanOrEqual(heroImage.x + 1);
+
   await expect(page.getByText("요리는 쉽게, 맛은 깊게.")).toBeVisible();
   await expect(page.getByText("담는 순간까지, 깨끗하게.")).toBeVisible();
 });

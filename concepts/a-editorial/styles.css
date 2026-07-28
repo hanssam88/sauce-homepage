@@ -159,7 +159,7 @@ img {
 [data-section="hero"] h1 {
   position: relative;
   z-index: 2;
-  grid-column: 1 / span 7;
+  grid-column: 1 / span 5;
   grid-row: 3;
   align-self: start;
   margin: 0;
@@ -248,21 +248,30 @@ img {
 }
 
 [data-section="philosophy"] {
-  background:
-    linear-gradient(90deg, transparent 0, transparent calc(50% - 0.5px), var(--line) 50%, transparent calc(50% + 0.5px));
+  background: var(--paper);
 }
 
 [data-section="philosophy"] > p:first-of-type,
-[data-section="philosophy"] h2 {
-  grid-column: 1 / span 7;
+[data-section="philosophy"] h2,
+[data-section="philosophy"] > h2 + p {
+  grid-column: 1 / span 5;
 }
 
 [data-section="philosophy"] > h2 + p {
-  grid-column: 9 / -1;
-  grid-row: 3;
   align-self: end;
   padding-top: 22px;
   border-top: 1px solid var(--ink);
+}
+
+[data-section="philosophy"] img {
+  grid-column: 7 / -1;
+  grid-row: 1 / -1;
+  width: 100%;
+  height: 100%;
+  max-height: 620px;
+  object-fit: cover;
+  filter: saturate(0.78) contrast(1.02);
+  transition: filter 180ms ease, transform 180ms ease;
 }
 
 [data-section="process"] {
@@ -318,7 +327,22 @@ img {
   border-top: 1px solid var(--ink);
 }
 
+.supporting-copy strong,
+.supporting-copy span {
+  display: block;
+}
+
+.supporting-copy strong {
+  margin-bottom: 12px;
+  font-family: "KoPub Batang", "Batang", serif;
+  font-size: clamp(1.2rem, 1.8vw, 1.75rem);
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  line-height: 1.25;
+}
+
 @media (hover: hover) {
+  [data-section="philosophy"]:hover img,
   [data-section="process"]:hover img,
   [data-section="table"]:hover img {
     filter: saturate(0.96) contrast(1.03);
@@ -433,6 +457,7 @@ img {
     margin-top: 80px;
   }
 
+  [data-section="philosophy"] img,
   [data-section="process"] img,
   [data-section="table"] img {
     height: min(58svh, 480px);
