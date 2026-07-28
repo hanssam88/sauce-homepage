@@ -42,6 +42,19 @@ for (const concept of concepts) {
   });
 }
 
+test("reduced motion leaves every video paused", async ({ browser }) => {
+  const context = await browser.newContext({ reducedMotion: "reduce" });
+  const page = await context.newPage();
+  for (const concept of concepts) {
+    await page.goto(`/concepts/${concept.slug}/`);
+    const playing = await page.locator("video").evaluateAll((videos) =>
+      videos.filter((video) => !video.paused).length
+    );
+    expect(playing).toBe(0);
+  }
+  await context.close();
+});
+
 test("A uses editorial chapters and visible Korean copy", async ({ page }) => {
   await page.goto("/concepts/a-editorial/");
   const chapters = page.locator("[data-chapter]");
