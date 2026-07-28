@@ -72,3 +72,12 @@ test("A uses editorial chapters and visible Korean copy", async ({ page }) => {
   await expect(page.getByText("요리는 쉽게, 맛은 깊게.")).toBeVisible();
   await expect(page.getByText("담는 순간까지, 깨끗하게.")).toBeVisible();
 });
+
+test("B exposes three cinematic scenes and pauses offscreen video", async ({ page }) => {
+  await page.goto("/concepts/b-cinematic/");
+  await expect(page.locator("[data-scene]")).toHaveCount(3);
+  const heroVideo = page.locator('[data-scene="source"] video');
+  await expect(heroVideo).toHaveAttribute("data-playing", /true|false/);
+  await page.locator('[data-section="table"]').scrollIntoViewIfNeeded();
+  await expect(heroVideo).toHaveAttribute("data-playing", "false");
+});

@@ -1,0 +1,326 @@
+:root {
+  --black: #090806;
+  --ivory: #f4eee3;
+  --ember: #bf4a2f;
+  --olive: #a8ad68;
+  --scene-enter: 900ms;
+  --edge: clamp(24px, 5vw, 76px);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--black);
+  scroll-behavior: smooth;
+}
+
+html[data-motion="reduced"] {
+  scroll-behavior: auto;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background: var(--black);
+  color: var(--ivory);
+  font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  line-height: 1.65;
+  text-rendering: optimizeLegibility;
+}
+
+a {
+  color: inherit;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--olive);
+  outline-offset: 5px;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 30;
+  padding: 10px 14px;
+  background: var(--ivory);
+  color: var(--black);
+  font-size: 0.8125rem;
+  transform: translateY(-150%);
+  transition: transform 180ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.site-header {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px var(--edge);
+  border-bottom: 1px solid rgba(244, 238, 227, 0.24);
+}
+
+.brand {
+  font-family: "KoPub Batang", "Batang", serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  text-decoration: none;
+}
+
+.brand span {
+  margin-left: 0.55rem;
+  color: var(--olive);
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  vertical-align: 0.18em;
+}
+
+.site-header nav {
+  display: flex;
+  gap: clamp(20px, 3vw, 44px);
+}
+
+.site-header nav a {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+[data-scene] {
+  position: relative;
+  min-height: 160vh;
+}
+
+.scene__stage {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+  background: var(--black);
+  isolation: isolate;
+}
+
+.scene__media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(8px) saturate(0.72) brightness(0.72);
+  transform: scale(1.025);
+  transition:
+    filter var(--scene-enter) cubic-bezier(.22, .61, .36, 1),
+    transform var(--scene-enter) cubic-bezier(.22, .61, .36, 1);
+}
+
+.scene.is-active .scene__media {
+  filter: blur(0) saturate(0.88) brightness(0.82);
+  transform: scale(1);
+}
+
+.scene__shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(9, 8, 6, 0.88) 0%, rgba(9, 8, 6, 0.46) 46%, rgba(9, 8, 6, 0.08) 78%),
+    linear-gradient(0deg, rgba(9, 8, 6, 0.9) 0%, rgba(9, 8, 6, 0.08) 68%);
+  pointer-events: none;
+}
+
+.scene__progress {
+  position: absolute;
+  top: clamp(104px, 13vh, 132px);
+  right: var(--edge);
+  z-index: 2;
+  margin: 0;
+  color: var(--ivory);
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.scene__copy {
+  position: absolute;
+  bottom: clamp(44px, 8vh, 88px);
+  left: var(--edge);
+  z-index: 2;
+  max-width: min(760px, calc(100vw - var(--edge) * 2));
+  opacity: 0.58;
+  transform: translateY(36px);
+  transition:
+    opacity var(--scene-enter) cubic-bezier(.22, .61, .36, 1),
+    transform var(--scene-enter) cubic-bezier(.22, .61, .36, 1);
+}
+
+.scene.is-active .scene__copy {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scene__eyebrow,
+.philosophy__label {
+  margin: 0 0 22px;
+  color: var(--olive);
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(0.7rem, 0.9vw, 0.8125rem);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.scene__copy h1,
+.scene__copy h2 {
+  margin: 0;
+  max-width: 12ch;
+  font-family: "KoPub Batang", "Batang", serif;
+  font-size: clamp(3.4rem, 7.4vw, 7.6rem);
+  font-weight: 500;
+  letter-spacing: -0.075em;
+  line-height: 0.98;
+  word-break: keep-all;
+}
+
+.scene__copy h1 + p,
+.scene__copy h2 + p {
+  max-width: 35rem;
+  margin: clamp(24px, 4vh, 40px) 0 0;
+  color: rgba(244, 238, 227, 0.86);
+  font-size: clamp(0.95rem, 1.2vw, 1.125rem);
+  letter-spacing: -0.025em;
+}
+
+.philosophy {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(280px, 1.2fr);
+  gap: clamp(28px, 8vw, 128px);
+  align-items: start;
+  padding: clamp(104px, 14vw, 208px) var(--edge);
+  background: var(--ivory);
+  color: var(--black);
+}
+
+.philosophy__label {
+  grid-column: 1 / -1;
+  margin-bottom: 0;
+  color: var(--ember);
+}
+
+.philosophy h2 {
+  margin: 0;
+  font-family: "KoPub Batang", "Batang", serif;
+  font-size: clamp(2.8rem, 5.6vw, 6.3rem);
+  font-weight: 500;
+  letter-spacing: -0.07em;
+  line-height: 1.06;
+  word-break: keep-all;
+}
+
+.philosophy > p:last-child {
+  max-width: 36rem;
+  margin: 0;
+  padding-top: 22px;
+  border-top: 1px solid rgba(9, 8, 6, 0.35);
+  font-size: clamp(1rem, 1.2vw, 1.125rem);
+  letter-spacing: -0.025em;
+}
+
+@media (max-width: 760px) {
+  .site-header {
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+
+  .brand span {
+    display: none;
+  }
+
+  .site-header nav {
+    gap: 16px;
+  }
+
+  .site-header nav a {
+    font-size: 0.75rem;
+  }
+
+  [data-scene] {
+    min-height: 120vh;
+  }
+
+  .scene__media,
+  .scene.is-active .scene__media {
+    filter: saturate(0.82) brightness(0.78);
+    transform: none;
+  }
+
+  .scene__progress {
+    top: 92px;
+  }
+
+  .scene__copy {
+    bottom: 40px;
+    max-width: calc(100vw - var(--edge) * 2);
+  }
+
+  .scene__copy h1,
+  .scene__copy h2 {
+    font-size: clamp(3rem, 15vw, 5rem);
+  }
+
+  .philosophy {
+    grid-template-columns: 1fr;
+    gap: 34px;
+    padding-top: 88px;
+    padding-bottom: 88px;
+  }
+
+  .philosophy h2 {
+    font-size: clamp(2.6rem, 12vw, 4.5rem);
+  }
+}
+
+html[data-motion="reduced"] [data-scene] {
+  position: relative;
+  min-height: auto;
+}
+
+html[data-motion="reduced"] .scene__stage {
+  position: relative;
+  min-height: min(82svh, 760px);
+}
+
+html[data-motion="reduced"] .scene__media,
+html[data-motion="reduced"] .scene__copy {
+  transition: none;
+}
+
+html[data-motion="reduced"] .scene__media {
+  filter: saturate(0.82) brightness(0.76);
+  transform: none;
+}
+
+html[data-motion="reduced"] .scene__copy {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
