@@ -21,7 +21,8 @@
 - 기준 화면은 데스크톱 1440×900과 모바일 390×844다.
 - 모든 핵심 콘텐츠는 JavaScript가 없어도 읽을 수 있어야 한다.
 - `prefers-reduced-motion: reduce`에서 자동 재생과 큰 이동을 제거한다.
-- 사용자가 `/commit-push`를 명시하지 않았으므로 커밋과 푸시는 실행하지 않는다.
+- 사용자가 `/commit-push 로컬 커밋만 허용, 원격 push 금지`를 승인했으므로 태스크별
+  로컬 커밋은 허용하고 원격 push와 PR 생성은 실행하지 않는다.
 
 ---
 
@@ -84,7 +85,7 @@ document.documentElement.classList.add("js");
 ### Task 1: 보존 게이트와 브라우저 테스트 하네스
 
 **Files:**
-- Create: `.gitignore`
+- Modify: `.gitignore`
 - Create: `package.json`
 - Create: `package-lock.json` via `npm install`
 - Create: `playwright.config.js`
@@ -160,6 +161,7 @@ module.exports = defineConfig({
 `.gitignore`:
 
 ```gitignore
+.claude/worktrees/
 node_modules/
 test-results/
 playwright-report/
