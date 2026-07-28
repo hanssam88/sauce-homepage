@@ -41,3 +41,10 @@ for (const concept of concepts) {
     });
   });
 }
+
+test("A uses editorial chapters and visible Korean copy", async ({ page }) => {
+  await page.goto("/concepts/a-editorial/");
+  await expect(page.locator("[data-chapter]")).toHaveCount(3);
+  await expect(page.getByText("요리는 쉽게, 맛은 깊게.")).toBeVisible();
+  await expect(page.getByText("담는 순간까지, 깨끗하게.")).toBeVisible();
+});
