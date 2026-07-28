@@ -81,3 +81,9 @@ test("B exposes three cinematic scenes and pauses offscreen video", async ({ pag
   await page.locator('[data-section="table"]').scrollIntoViewIfNeeded();
   await expect(heroVideo).toHaveAttribute("data-playing", "false");
 });
+
+test("B keeps visible brand labels in Korean", async ({ page }) => {
+  await page.goto("/concepts/b-cinematic/");
+  await expect(page.locator(".brand")).toHaveText("찬지기");
+  await expect(page.locator(".philosophy__label")).toHaveText("찬지기 · 우리의 기준");
+});

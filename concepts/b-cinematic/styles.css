@@ -76,15 +76,6 @@ a:focus-visible {
   text-decoration: none;
 }
 
-.brand span {
-  margin-left: 0.55rem;
-  color: var(--olive);
-  font-family: "Helvetica Neue", Arial, sans-serif;
-  font-size: 0.625rem;
-  letter-spacing: 0.18em;
-  vertical-align: 0.18em;
-}
-
 .site-header nav {
   display: flex;
   gap: clamp(20px, 3vw, 44px);
@@ -241,10 +232,6 @@ a:focus-visible {
   .site-header {
     padding-top: 18px;
     padding-bottom: 18px;
-  }
-
-  .brand span {
-    display: none;
   }
 
   .site-header nav {
