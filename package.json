@@ -1,0 +1,11 @@
+{
+  "name": "chanjigi-concept-comparison",
+  "private": true,
+  "scripts": {
+    "test": "playwright test tests/concepts.spec.js",
+    "capture": "playwright test tests/capture.spec.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.0"
+  }
+}
