@@ -1,7 +1,7 @@
 :root {
   --black: #090806;
   --ivory: #f4eee3;
-  --ember: #bf4a2f;
+  --ember: #b7462d;
   --olive: #a8ad68;
   --scene-enter: 900ms;
   --edge: clamp(24px, 5vw, 76px);

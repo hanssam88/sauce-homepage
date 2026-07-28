@@ -6,6 +6,28 @@ const concepts = [
   { slug: "c-gallery", body: "c-gallery" }
 ];
 
+function parseRgb(value) {
+  return value.match(/[\d.]+/g).slice(0, 3).map(Number);
+}
+
+function relativeLuminance(value) {
+  const [red, green, blue] = parseRgb(value).map((channel) => {
+    const normalized = channel / 255;
+    return normalized <= 0.04045
+      ? normalized / 12.92
+      : ((normalized + 0.055) / 1.055) ** 2.4;
+  });
+  return (0.2126 * red) + (0.7152 * green) + (0.0722 * blue);
+}
+
+function contrastRatio(foreground, background) {
+  const luminances = [
+    relativeLuminance(foreground),
+    relativeLuminance(background)
+  ].sort((left, right) => right - left);
+  return (luminances[0] + 0.05) / (luminances[1] + 0.05);
+}
+
 for (const concept of concepts) {
   test.describe(concept.slug, () => {
     test("renders the shared content contract", async ({ page }) => {
@@ -99,6 +121,37 @@ test("B keeps visible brand labels in Korean", async ({ page }) => {
   await page.goto("/concepts/b-cinematic/");
   await expect(page.locator(".brand")).toHaveText("찬지기");
   await expect(page.locator(".philosophy__label")).toHaveText("찬지기 · 우리의 기준");
+});
+
+test("small accent labels meet WCAG AA contrast", async ({ page }) => {
+  const samples = [
+    {
+      name: "A olive hero eyebrow",
+      url: "/concepts/a-editorial/",
+      foreground: '[data-section="hero"] > p:first-of-type',
+      background: "body"
+    },
+    {
+      name: "B ember philosophy label",
+      url: "/concepts/b-cinematic/",
+      foreground: ".philosophy__label",
+      background: ".philosophy"
+    }
+  ];
+
+  for (const sample of samples) {
+    await page.goto(sample.url);
+    const colors = await page.evaluate(({ foreground, background }) => ({
+      foreground: getComputedStyle(document.querySelector(foreground)).color,
+      background: getComputedStyle(document.querySelector(background)).backgroundColor
+    }), sample);
+    const ratio = contrastRatio(colors.foreground, colors.background);
+
+    expect.soft(
+      ratio,
+      `${sample.name}: ${colors.foreground} on ${colors.background}`
+    ).toBeGreaterThanOrEqual(4.5);
+  }
 });
 
 test("C exposes a framed image grid with focusable cards", async ({ page }) => {
